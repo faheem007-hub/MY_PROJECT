@@ -1,0 +1,399 @@
+/* General Styles for All Pages */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #e0e0e0;
+    position: relative;
+    line-height: 1.6;
+}
+
+/* Video Background */
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.video-background video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+}
+
+/* Content Container */
+.content-container {
+    background: rgba(0, 0, 0, 0.85);
+    position: relative;
+    z-index: 1;
+    padding: 80px 20px 50px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Navbar - Positioned at the Top */
+.navbar {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+/* Home Page Styles */
+.welcome {
+    text-align: center;
+    color: #fff;
+    padding: 40px 20px;
+    font-size: 1.8rem;
+    margin-top: 0;
+    font-weight: 300;
+}
+
+/* Icons Section - Modern Grid Layout Below Welcome */
+.icons-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 50px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.icon-card {
+    background: rgba(37, 37, 37, 0.8);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease-in-out;
+    display: flex; /* added flex display */
+    flex-direction: column; /* added flex direction */
+    align-items: center; /* added align items center */
+    justify-content: flex-start; /* added justify content start */
+}
+
+.icon-card:hover {
+    transform: translateY(-5px);
+}
+
+.icon-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 20px;
+}
+
+.icon-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* User Reviews Section - Vertical Layout */
+.reviews {
+    text-align: left;
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+.review-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.review-card img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.review-card .review-text {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.review-card .review-paragraph {
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .welcome {
+        font-size: 1.6rem;
+    }
+    .icons-section {
+        padding: 40px 10px;
+    }
+    .reviews {
+        padding: 30px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome {
+        font-size: 1.4rem;
+    }
+    .icons-section {
+        grid-template-columns: 1fr;
+        padding: 30px 5px;
+    }
+    .reviews {
+        padding: 20px 5px;
+    }
+}
+
+/* Modern Styles (Inline for simplicity, but move to styles.css for production) */
+.welcome h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.welcome p {
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.reviews {
+    padding: 60px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.reviews h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.review-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    justify-items: center;
+}
+
+.review-card {
+    background: rgba(32, 32, 32, 0.8);
+    padding: 25px;
+    border-radius: 8px;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.review-card img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.review-card p {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.review-card h4 {
+    font-size: 0.9rem;
+    color: #999;
+    margin-top: 10px;
+}
+
+.contact-section {
+    padding: 60px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-section h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.contact-section form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.benefits-list {
+    list-style: none;
+    padding: 0;
+    font-size: 1.1rem;
+    color: #000000;
+}
+
+.benefits-list li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    text color: black;
+    
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #e0e0e0;
+        background: #1a1a1a; /* Darker background */
+    }
+    
+    nav {
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px 0;
+        text-align: center;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 100;
+    }
+    
+    nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    nav ul li a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        font-size: 18px;
+        transition: 0.3s;
+    }
+    
+    nav ul li a:hover,
+    nav ul li a.active {
+        background: #ff9800; /* Orange accent */
+        border-radius: 5px;
+    }
+    
+    #background-video {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        min-width: 100%;
+        min-height: 100%;
+        z-index: -1;
+    }
+    
+    .container {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 80%;
+        margin: 80px auto 20px;
+    }
+    
+    #logContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .log-entry {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 10px;
+        width: 450px; /* Increased width */
+        text-align: left;
+        border: 1px solid #333;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+    
+    .log-entry table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .log-entry table td {
+        padding: 8px;
+        border-bottom: 1px solid #333;
+    }
+    
+    .service-alert {
+        color: #ff4500; /* Red-orange alert */
+        font-weight: bold;
+    }
+    
+    .service-ok {
+        color: #4caf50; /* Green OK */
+        font-weight: bold;
+    }
+    
+    form {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two columns */
+        gap: 15px;
+        justify-content: center;
+    }
+    
+    input,
+    button {
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #333;
+        background: #222;
+        color: #e0e0e0;
+        border-radius: 5px;
+    }
+    
+    button {
+        background: #ff9800; /* Orange button */
+        border: none;
+        cursor: pointer;
+        grid-column: 1 / 3; /* Span two columns */
+    }
+    
+    button:hover {
+        background: #f57c00;
+    }

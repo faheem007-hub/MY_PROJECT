@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truck Log Book</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About us</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+    </nav>
+
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline id="background-video">
+        <source src="assets/13171070-uhd_3840_2160_25fps.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="container">
+        <h2>Truck Log Book</h2>
+        
+        <!-- Log Entries Container -->
+        <div id="logContainer">
+            <!-- Data from the database will be inserted here -->
+        </div>
+
+        <h3>Add New Log</h3>
+        <form id="logForm">
+            <input type="text" id="driver_name" placeholder="Driver Name" required><br>
+            <input type="text" id="driver_id" placeholder="Driver ID" required><br>
+            <input type="text" id="plate_number" placeholder="Plate Number" required><br>
+            <input type="datetime-local" id="start_time" required><br>
+            <input type="datetime-local" id="end_time" required><br>
+            <input type="number" id="start_odometer" placeholder="Start Odometer" required><br>
+            <input type="number" id="stop_odometer" placeholder="Stop Odometer" required><br>
+            <input type="date" id="previous_service" required><br>
+            <input type="date" id="next_service" required><br>
+            <button type="submit">Add Log</button>
+        </form>
+    </div>
+
+    <script>
+       function fetchLogs() {
+    fetch('fetch_logs.php')
+        .then(response => response.json())
+        .then(data => {
+            let logContainer = document.getElementById('logContainer');
+            logContainer.innerHTML = '';
+            data.forEach(log => {
+                let alertText = new Date(log.next_service) <= new Date() ? '⚠ Service Due' : '✔ OK';
+                let alertClass = new Date(log.next_service) <= new Date() ? 'service-alert' : 'service-ok';
+
+                logContainer.innerHTML += `
+                    <div class="log-entry">
+                        <table>
+                            <tr><td><strong>Driver Name:</strong></td><td>${log.driver_name}</td></tr>
+                            <tr><td><strong>Driver ID:</strong></td><td>${log.driver_id}</td></tr>
+                            <tr><td><strong>Plate Number:</strong></td><td>${log.plate_number}</td></tr>
+                            <tr><td><strong>Start Time:</strong></td><td>${log.start_time}</td></tr>
+                            <tr><td><strong>End Time:</strong></td><td>${log.end_time}</td></tr>
+                            <tr><td><strong>Start Odometer:</strong></td><td>${log.start_odometer}</td></tr>
+                            <tr><td><strong>Stop Odometer:</strong></td><td>${log.stop_odometer}</td></tr>
+                            <tr><td><strong>Previous Service:</strong></td><td>${log.previous_service}</td></tr>
+                            <tr><td><strong>Next Service:</strong></td><td>${log.next_service}</td></tr>
+                            <tr><td><strong>Status:</strong></td><td><span class="${alertClass}">${alertText}</span></td></tr>
+                        </table>
+                    </div>
+                `;
+            });
+        });
+}
+                        `;
+                    });
+                });
+        }
+
+        document.getElementById('logForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let formData = new FormData();
+            formData.append('driver_name', document.getElementById('driver_name').value);
+            formData.append('driver_id', document.getElementById('driver_id').value);
+            formData.append('plate_number', document.getElementById('plate_number').value);
+            formData.append('start_time', document.getElementById('start_time').value);
+            formData.append('end_time', document.getElementById('end_time').value);
+            formData.append('start_odometer', document.getElementById('start_odometer').value);
+            formData.append('stop_odometer', document.getElementById('stop_odometer').value);
+            formData.append('previous_service', document.getElementById('previous_service').value);
+            formData.append('next_service', document.getElementById('next_service').value);
+
+            fetch('add_log.php', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.text())
+              .then(data => {
+                  alert(data);
+                  fetchLogs();
+              });
+        });
+
+        fetchLogs();
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        /* Navigation Bar Styles */
+        nav {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 0;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover, 
+        nav ul li a.active {
+            background: orange;
+            border-radius: 5px;
+        }
+
+        #background-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 80%;
+            margin: 80px auto 20px;
+        }
+
+        #logContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .log-entry {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: left;
+            border: 1px solid white;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .log-entry p {
+            margin: 5px 0;
+        }
+
+        .service-alert {
+            color: red;
+            font-weight: bold;
+        }
+
+        .service-ok {
+            color: green;
+            font-weight: bold;
+        }
+
+        form {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            background: orange;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkorange;
+        }
+    </style>
+
+</body>
+</html>

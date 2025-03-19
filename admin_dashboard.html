@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; margin: 0; }
+        .sidebar { width: 250px; background: #333; color: white; height: 100vh; padding: 20px; }
+        .sidebar h2 { text-align: center; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar ul li { padding: 15px; cursor: pointer; border-bottom: 1px solid #444; }
+        .sidebar ul li:hover { background: #555; }
+        .main { flex: 1; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .logout-btn { background: red; color: white; padding: 10px; border: none; cursor: pointer; }
+        .container { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li onclick="loadContent('home')">Home</li>
+            <li onclick="loadContent('drivers')">Drivers</li>
+            <li onclick="loadContent('reports')">Reports</li>
+            <li onclick="loadContent('settings')">Settings</li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="header">
+            <h2 id="welcome-msg">Welcome</h2>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        <div class="container" id="content">
+            <p>Select a menu item to view details.</p>
+        </div>
+    </div>
+    <script>
+        function loadContent(page) {
+            let content = document.getElementById("content");
+            if (page === "home") {
+                content.innerHTML = "<h3>Dashboard Overview</h3><p>System statistics will go here.</p>";
+            } else if (page === "drivers") {
+                content.innerHTML = "<h3>Driver Management</h3><p>List and manage drivers.</p>";
+            } else if (page === "reports") {
+                content.innerHTML = "<h3>Reports</h3><p>Generate and view reports.</p>";
+            } else if (page === "settings") {
+                content.innerHTML = "<h3>Settings</h3><p>Manage system preferences.</p>";
+            }
+        }
+        function logout() {
+            window.location.href = "login.html";
+        }
+        document.getElementById("welcome-msg").innerText = "Welcome, User";
+    </script>
+</body>
+</html>

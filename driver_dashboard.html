@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 id="welcome-message"></h2>
+
+        <button onclick="logout()">Logout</button>
+        
+        <h3>Assigned Vehicles</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th><th>Name</th><th>Email</th><th>License No</th><th>Vehicle</th>
+                </tr>
+            </thead>
+            <tbody id="driver-table"></tbody>
+        </table>
+
+        <h3>Add Trip Log</h3>
+        <form id="trip-log-form">
+            <div class="form-group">
+                <label for="loadCarried">Load Carried</label>
+                <input type="text" id="loadCarried" required>
+            </div>
+            <div class="form-group">
+                <label for="distanceCovered">Distance Covered (km)</label>
+                <input type="number" id="distanceCovered" required>
+            </div>
+            <div class="form-group">
+                <label for="startTime">Start Time</label>
+                <input type="time" id="startTime" required>
+            </div>
+            <div class="form-group">
+                <label for="stopTime">Stop Time</label>
+                <input type="time" id="stopTime" required>
+            </div>
+            <div class="form-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate" required>
+            </div>
+            <div class="form-group">
+                <label for="stopDate">Stop Date</label>
+                <input type="date" id="stopDate" required>
+            </div>
+            <div class="form-group">
+                <label for="startOdometer">Odometer Start (km)</label>
+                <input type="number" id="startOdometer" required>
+            </div>
+            <div class="form-group">
+                <label for="stopOdometer">Odometer Stop (km)</label>
+                <input type="number" id="stopOdometer" required>
+            </div>
+            <button type="submit">Add Trip Log</button>
+        </form>
+
+        <h3>Trip Logs</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Load</th><th>Distance</th><th>Start Time</th><th>Stop Time</th>
+                    <th>Start Date</th><th>Stop Date</th><th>Odometer Start</th><th>Odometer Stop</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="trip-log-table"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function fetchData() {
+            fetch("http://localhost:3000/drivers")
+                .then(response => response.json())
+                .then(data => {
+                    let table = document.getElementById("driver-table");
+                    table.innerHTML = "";
+                    data.forEach(user => {
+                        let row = `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td>${user.license_number}</td>
+                                <td>${user.vehicle}</td>
+                            </tr>`;
+                        table.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+
+        function logout() {
+            window.location.href = "login.html";
+        }
+
+        document.getElementById("trip-log-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Get input values
+            const loadCarried = document.getElementById("loadCarried").value.trim();
+            const distanceCovered = document.getElementById("distanceCovered").value.trim();
+            const startTime = document.getElementById("startTime").value.trim();
+            const stopTime = document.getElementById("stopTime").value.trim();
+            const startDate = document.getElementById("startDate").value.trim();
+            const stopDate = document.getElementById("stopDate").value.trim();
+            const startOdometer = document.getElementById("startOdometer").value.trim();
+            const stopOdometer = document.getElementById("stopOdometer").value.trim();
+
+            if (!loadCarried || !distanceCovered || !startTime || !stopTime || !startDate || !stopDate || !startOdometer || !stopOdometer) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            const tripTable = document.getElementById("trip-log-table");
+
+            // Create new row
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>${loadCarried}</td>
+                <td>${distanceCovered} km</td>
+                <td>${startTime}</td>
+                <td>${stopTime}</td>
+                <td>${startDate}</td>
+                <td>${stopDate}</td>
+                <td>${startOdometer} km</td>
+                <td>${stopOdometer} km</td>
+                <td><button class="delete-btn">Delete</button></td>
+            `;
+
+            // Append row to table
+            tripTable.appendChild(newRow);
+
+            // Clear form
+            document.getElementById("trip-log-form").reset();
+
+            // Delete row functionality
+            newRow.querySelector(".delete-btn").addEventListener("click", function () {
+                newRow.remove();
+            });
+        });
+
+        fetchData();
+        // Retrieve logged-in driver info
+const driver = JSON.parse(localStorage.getItem("driver"));
+
+// Display welcome message
+if (driver) {
+    document.getElementById("welcome-message").innerText = `Welcome, ${driver.name}`;
+} else {
+    // Redirect to login if no user is found
+    window.location.href = "login.html";
+}
+
+    </script>
+
+</body>
+</html>

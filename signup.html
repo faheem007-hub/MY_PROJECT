@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Driver Log Book</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #004aad, #002855); /* Professional Gradient */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        /* Navbar Container */
+        #navbar-container {
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+
+        /* Sign-Up Container */
+        .signup-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            margin-top: 60px;
+        }
+
+        .signup-container h2 {
+            color: #002855;
+            margin-bottom: 20px;
+        }
+
+        /* Input Fields */
+        .signup-container label {
+            display: block;
+            text-align: left;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #333;
+        }
+
+        .signup-container input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: 0.3s;
+        }
+
+        .signup-container input:focus {
+            border-color: #004aad;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 74, 173, 0.5);
+        }
+
+        /* Password Field Container */
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #555;
+        }
+
+        /* Sign-Up Button */
+        .signup-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #004aad;
+            color: white;
+            border: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .signup-btn:hover {
+            background: #003080;
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 20px;
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div id="navbar-container"></div>
+
+    <div class="signup-container">
+        <h2>Driver Sign Up</h2>
+        <form id="signupForm">
+            <label for="full-name">Full Name:</label>
+            <input type="text" id="full-name" placeholder="Enter your full name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+
+            <label for="license-no">Driver's License Number:</label>
+            <input type="text" id="license-no" placeholder="Enter license number" required>
+
+            <label for="plate-number">Truck Plate Number:</label>
+            <input type="text" id="plate-number" placeholder="e.g., KAB 123X" required>
+
+            <label for="password">Password:</label>
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Create a password" required>
+                <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+            </div>
+
+            <label for="confirm-password">Confirm Password:</label>
+            <div class="password-container">
+                <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                <span class="toggle-password" onclick="togglePassword('confirm-password')">👁️</span>
+            </div>
+
+            <button type="submit" class="signup-btn">Sign Up</button>
+        </form>
+    </div>
+
+    <script>
+        // Load Navbar from navbar.html
+        fetch("navbar.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("navbar-container").innerHTML = data;
+            });
+
+        // Show/Hide Password
+        function togglePassword(fieldID) {
+            let field = document.getElementById(fieldID);
+            if (field.type === "password") {
+                field.type = "text";
+            } else {
+                field.type = "password";
+            }
+        }
+
+        // Form Validation
+        document.getElementById("signupForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            let fullName = document.getElementById("full-name").value.trim();
+            let email = document.getElementById("email").value.trim();
+            let phone = document.getElementById("phone").value.trim();
+            let licenseNo = document.getElementById("license-no").value.trim();
+            let plateNumber = document.getElementById("plate-number").value.trim();
+            let password = document.getElementById("password").value.trim();
+            let confirmPassword = document.getElementById("confirm-password").value.trim();
+
+            if (fullName === "" || email === "" || phone === "" || licenseNo === "" || plateNumber === "" || password === "" || confirmPassword === "") {
+                alert("Please fill in all fields!");
+                return;
+            }
+
+            if (!/^[A-Za-z ]+$/.test(fullName)) {
+                alert("Invalid name! Use only letters.");
+                return;
+            }
+
+            if (!/^\d{10}$/.test(phone)) {
+                alert("Invalid phone number! Enter a 10-digit number.");
+                return;
+            }
+
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters!");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            alert("Sign-Up Successful!");
+            // Redirect to another page if needed
+            // window.location.href = "dashboard.html";
+        });
+    </script>
+
+</body>
+</html>
