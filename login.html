@@ -190,6 +190,12 @@
             
             <label for="password">Password:</label>
             <input type="password" id="password" required>
+            <label for="role">Role</label>
+            <select id="role" required>
+                <option value="driver">Driver</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+            </select>
         
             <button type="submit">Login</button>
         </form>
@@ -202,23 +208,28 @@
     
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
+            const role = document.getElementById("role").value;
     
-            fetch("http://localhost:3000/login", {
+            fetch("http://localhost:3001/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password,role})
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === "success") {
                     alert("Login Successful!");
-    
+                    localStorage.setItem("id", data.user.id);
+                    localStorage.setItem("userRole", data.role);
+                    localStorage.setItem("authToken", data.token);
                     // Redirect based on user role
-                    if (data.role === "admin") {
+                    if (data.user.role === "admin") {
                         window.location.href = "admin_dashboard.html";
-                    } else if (data.role === "manager") {
+                    } else if (data.user.role === "manager") {
+                        localStorage.setItem('manager',data.name)
                         window.location.href = "manager_dashboard.html";
-                    } else if (data.role === "driver") {
+                    } else if (data.user.role === "driver") {
+                        localStorage.setItem("driver",data.name)
                         window.location.href = "driver_dashboard.html";
                     } else {
                         alert("Invalid role. Please contact support.");

@@ -86,8 +86,12 @@
         <h3>Add Trip Log</h3>
         <form id="trip-log-form">
             <div class="form-group">
-                <label for="loadCarried">Load Carried</label>
-                <input type="text" id="loadCarried" required>
+                <label for="start_location">Start location</label>
+                <input type="text" id="start_location" required>
+            </div>
+            <div class="form-group">
+                <label for="end_location">End location</label>
+                <input type="text" id="end_location" required>
             </div>
             <div class="form-group">
                 <label for="distanceCovered">Distance Covered (km)</label>
@@ -102,20 +106,12 @@
                 <input type="time" id="stopTime" required>
             </div>
             <div class="form-group">
-                <label for="startDate">Start Date</label>
-                <input type="date" id="startDate" required>
-            </div>
-            <div class="form-group">
-                <label for="stopDate">Stop Date</label>
-                <input type="date" id="stopDate" required>
-            </div>
-            <div class="form-group">
-                <label for="startOdometer">Odometer Start (km)</label>
-                <input type="number" id="startOdometer" required>
-            </div>
-            <div class="form-group">
-                <label for="stopOdometer">Odometer Stop (km)</label>
-                <input type="number" id="stopOdometer" required>
+                <label for="startOdometer">Status</label>
+                <select id="startOdometer">
+                    <option value="scheduled">Scheduled</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
             </div>
             <button type="submit">Add Trip Log</button>
         </form>
@@ -124,8 +120,8 @@
         <table>
             <thead>
                 <tr>
-                    <th>Load</th><th>Distance</th><th>Start Time</th><th>Stop Time</th>
-                    <th>Start Date</th><th>Stop Date</th><th>Odometer Start</th><th>Odometer Stop</th><th>Action</th>
+                    <th>truck_id</th><th>driver_id</th><th>start_Location</th><th>end_Location</th>
+                    <th>Distance</th><th>Start_time</th><th>End_time</th><th>Status</th><th>Action</th>
                 </tr>
             </thead>
             <tbody id="trip-log-table"></tbody>
@@ -133,20 +129,21 @@
     </div>
 
     <script>
+        
         function fetchData() {
-            fetch("http://localhost:3000/drivers")
+            fetch("http://localhost:3001/drivers")
                 .then(response => response.json())
                 .then(data => {
                     let table = document.getElementById("driver-table");
                     table.innerHTML = "";
-                    data.forEach(user => {
+                    data.data.forEach(user => {
                         let row = `
                             <tr>
                                 <td>${user.id}</td>
                                 <td>${user.name}</td>
                                 <td>${user.email}</td>
-                                <td>${user.license_number}</td>
-                                <td>${user.vehicle}</td>
+                                <td>${user.licence_number}</td>
+                                <td>${user.assigned_vehicle}</td>
                             </tr>`;
                         table.innerHTML += row;
                     });
@@ -154,69 +151,99 @@
                 .catch(error => console.error("Error fetching data:", error));
         }
 
-        function logout() {
-            window.location.href = "login.html";
-        }
+        function fetchTrips() {
+    let driver_id = parseInt(localStorage.getItem("id"));
+    fetch(`http://localhost:3001/trips/${driver_id}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Full API Response:", data); // Debugging step
+            
+            let tripTable = document.getElementById("trip-log-table");
+            tripTable.innerHTML = "";
 
-        document.getElementById("trip-log-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            // Get input values
-            const loadCarried = document.getElementById("loadCarried").value.trim();
-            const distanceCovered = document.getElementById("distanceCovered").value.trim();
-            const startTime = document.getElementById("startTime").value.trim();
-            const stopTime = document.getElementById("stopTime").value.trim();
-            const startDate = document.getElementById("startDate").value.trim();
-            const stopDate = document.getElementById("stopDate").value.trim();
-            const startOdometer = document.getElementById("startOdometer").value.trim();
-            const stopOdometer = document.getElementById("stopOdometer").value.trim();
-
-            if (!loadCarried || !distanceCovered || !startTime || !stopTime || !startDate || !stopDate || !startOdometer || !stopOdometer) {
-                alert("Please fill in all fields.");
+            // Ensure correct response structure
+            let trips = data.data || data; // Handle cases where data is directly an array
+            if (!Array.isArray(trips)) {
+                console.error("Unexpected API response format:", data);
                 return;
             }
 
-            const tripTable = document.getElementById("trip-log-table");
-
-            // Create new row
-            const newRow = document.createElement("tr");
-            newRow.innerHTML = `
-                <td>${loadCarried}</td>
-                <td>${distanceCovered} km</td>
-                <td>${startTime}</td>
-                <td>${stopTime}</td>
-                <td>${startDate}</td>
-                <td>${stopDate}</td>
-                <td>${startOdometer} km</td>
-                <td>${stopOdometer} km</td>
-                <td><button class="delete-btn">Delete</button></td>
-            `;
-
-            // Append row to table
-            tripTable.appendChild(newRow);
-
-            // Clear form
-            document.getElementById("trip-log-form").reset();
-
-            // Delete row functionality
-            newRow.querySelector(".delete-btn").addEventListener("click", function () {
-                newRow.remove();
+            trips.forEach(trip => {
+                let row = `
+                    <tr>
+                        <td>${trip.truck_id}</td>
+                        <td>${trip.driver_id}</td>
+                        <td>${trip.start_location}</td>
+                        <td>${trip.end_location}</td>
+                        <td>${trip.distance}</td>
+                        <td>${trip.start_time}</td>
+                        <td>${trip.end_time}</td>
+                        <td>${trip.status}</td>
+                        <td><button class="delete-btn" data-id="${trip.id}">Delete</button></td>
+                    </tr>`;
+                tripTable.innerHTML += row;
             });
-        });
 
-        fetchData();
-        // Retrieve logged-in driver info
-const driver = JSON.parse(localStorage.getItem("driver"));
-
-// Display welcome message
-if (driver) {
-    document.getElementById("welcome-message").innerText = `Welcome, ${driver.name}`;
-} else {
-    // Redirect to login if no user is found
-    window.location.href = "login.html";
+            document.querySelectorAll(".delete-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    deleteTrip(this.dataset.id);
+                });
+            });
+        })
+        .catch(error => console.error("Error fetching trips:", error));
 }
 
-    </script>
 
+
+document.getElementById("trip-log-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    const getCurrentDate = () => {
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    return today;
+};
+    const formatDateTime = (time) => {
+    return time ? `${getCurrentDate()} ${time}:00` : null; // Convert to "YYYY-MM-DD HH:MM:SS"
+};
+
+    const tripData = {
+        truck_id: 2,
+        driver_id: parseInt(localStorage.getItem("id")),
+        start_location: document.getElementById("start_location").value.trim(),
+        end_location: document.getElementById("end_location").value.trim(),
+        distance: parseFloat(document.getElementById("distanceCovered").value.trim()),
+        start_time: formatDateTime(document.getElementById("startTime").value.trim()),
+        stop_time:formatDateTime(document.getElementById("stopTime").value.trim()),
+        status: document.getElementById("startOdometer").value
+    };
+    
+
+    fetch("http://localhost:3001/trips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tripData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Trip Added Response:", data);
+        if (data.status === "success") {
+            document.getElementById("trip-log-form").reset();
+            fetchTrips(); // Refresh trip logs
+        } else {
+            alert("Failed to add trip: " + data.message);
+        }
+    })
+    .catch(error => console.error("Error adding trip:", error));
+});
+
+
+        function deleteTrip(tripId) {
+            fetch(`http://localhost:3001/trips/${tripId}`, { method: "DELETE" })
+                .then(() => fetchTrips())
+                .catch(error => console.error("Error deleting trip:", error));
+        }
+
+        fetchData();
+        fetchTrips();
+    </script>
 </body>
 </html>
