@@ -49,24 +49,16 @@
             background-color: #007bff;
             color: white;
         }
-        .driver-btn {
-            background: #28a745;
-            color: white;
-            border: none;
+        .btn {
             padding: 5px 10px;
+            border: none;
             cursor: pointer;
         }
-        .report-btn {
-            background: #ffc107;
-            color: black;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
+        .driver-btn { background: #28a745; color: white; }
+        .report-btn { background: #ffc107; color: black; }
     </style>
 </head>
 <body>
-
     <div class="sidebar">
         <h2>Manager Dashboard</h2>
         <p id="manager-name">Welcome, Manager</p>
@@ -84,35 +76,38 @@
             <tbody id="driver-table"></tbody>
         </table>
 
-        <h3>Driver Progress</h3>
+        <h3>All Trips</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Date</th><th>Vehicle</th><th>Load</th><th>Distance</th><th>Start Time</th><th>End Time</th>
-                    <th>Odometer Start</th><th>Odometer End</th>
+                    <th>Trip ID</th><th>Driver ID</th><th>Truck ID</th><th>Start Location</th>
+                    <th>End Location</th><th>Distance</th><th>Start Time</th><th>End Time</th><th>Status</th>
                 </tr>
             </thead>
-            <tbody id="trip-log"></tbody>
+            <tbody id="trip-table"></tbody>
         </table>
     </div>
 
     <script>
-        // Fetch and display all drivers
         function fetchDrivers() {
-            fetch("http://localhost:3000/drivers")
+            fetch("http://localhost:3001/drivers")
                 .then(response => response.json())
                 .then(data => {
                     let table = document.getElementById("driver-table");
                     table.innerHTML = "";
-                    data.forEach(driver => {
+                    if (!data.data || data.data.length === 0) {
+                        table.innerHTML = "<tr><td colspan='5'>No drivers found.</td></tr>";
+                        return;
+                    }
+                    data.data.forEach(driver => {
                         let row = `<tr>
                             <td>${driver.id}</td>
                             <td>${driver.name}</td>
                             <td>${driver.email}</td>
-                            <td>${driver.license_number}</td>
+                            <td>${driver.licence_number}</td>
                             <td>
-                                <button class="driver-btn" onclick="viewDriverTrips(${driver.id})">View Trips</button>
-                                <button class="report-btn" onclick="generateReport(${driver.id})">Generate Report</button>
+                                <button class="btn driver-btn" onclick="viewDriverTrips(${driver.id})">View Trips</button>
+                                <button class="btn report-btn" onclick="generateReport(${driver.id})">Generate Report</button>
                             </td>
                         </tr>`;
                         table.innerHTML += row;
@@ -121,23 +116,27 @@
                 .catch(error => console.error("Error fetching drivers:", error));
         }
 
-        // Fetch and display trips for a specific driver
-        function viewDriverTrips(driverId) {
-            fetch(`http://localhost:3000/trips?driver_id=${driverId}`)
+        function fetchTrips() {
+            fetch("http://localhost:3001/trips")
                 .then(response => response.json())
                 .then(data => {
-                    let tripTable = document.getElementById("trip-log");
+                    let tripTable = document.getElementById("trip-table");
                     tripTable.innerHTML = "";
-                    data.forEach(trip => {
+                    if (!data.data || data.data.length === 0) {
+                        tripTable.innerHTML = "<tr><td colspan='9'>No trips found.</td></tr>";
+                        return;
+                    }
+                    data.data.forEach(trip => {
                         let row = `<tr>
-                            <td>${trip.date}</td>
-                            <td>${trip.vehicle}</td>
-                            <td>${trip.load_carried}</td>
-                            <td>${trip.distance_covered}</td>
+                            <td>${trip.id}</td>
+                            <td>${trip.driver_id}</td>
+                            <td>${trip.truck_id}</td>
+                            <td>${trip.start_location}</td>
+                            <td>${trip.end_location}</td>
+                            <td>${trip.distance} km</td>
                             <td>${trip.start_time}</td>
                             <td>${trip.end_time}</td>
-                            <td>${trip.odometer_start}</td>
-                            <td>${trip.odometer_end}</td>
+                            <td>${trip.status}</td>
                         </tr>`;
                         tripTable.innerHTML += row;
                     });
@@ -145,42 +144,44 @@
                 .catch(error => console.error("Error fetching trips:", error));
         }
 
-        // Generate and download a report for a driver
-        function generateReport(driverId) {
-            fetch(`http://localhost:3000/trips?driver_id=${driverId}`)
+        function viewDriverTrips(driverId) {
+            fetch(`http://localhost:3001/trips`)
                 .then(response => response.json())
                 .then(data => {
-                    let reportContent = "Date,Vehicle,Load,Distance,Start Time,End Time,Odometer Start,Odometer End\n";
-                    data.forEach(trip => {
-                        reportContent += `${trip.date},${trip.vehicle},${trip.load_carried},${trip.distance_covered},${trip.start_time},${trip.end_time},${trip.odometer_start},${trip.odometer_end}\n`;
+                    print(data)
+                    let tripTable = document.getElementById("trip-table");
+                    tripTable.innerHTML = "";
+                    if (!data.data || data.data.length === 0) {
+                        tripTable.innerHTML = "<tr><td colspan='9'>No trips found for this driver.</td></tr>";
+                        return;
+                    }
+                    data.data.forEach(trip => {
+                        let row = `<tr>
+                            <td>${trip.id}</td>
+                            <td>${trip.driver_id}</td>
+                            <td>${trip.truck_id}</td>
+                            <td>${trip.start_location}</td>
+                            <td>${trip.end_location}</td>
+                            <td>${trip.distance} km</td>
+                            <td>${trip.start_time}</td>
+                            <td>${trip.end_time}</td>
+                            <td>${trip.status}</td>
+                        </tr>`;
+                        tripTable.innerHTML += row;
                     });
-
-                    // Create a downloadable file
-                    let blob = new Blob([reportContent], { type: "text/csv" });
-                    let link = document.createElement("a");
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `driver_${driverId}_report.csv`;
-                    link.click();
                 })
-                .catch(error => console.error("Error generating report:", error));
+                .catch(error => console.error("Error fetching driver trips:", error));
         }
 
-        // Logout function
         function logout() {
-            localStorage.removeItem("manager");
+            alert("Logging out...");
             window.location.href = "login.html";
         }
 
-        // Display manager name
-        const manager = JSON.parse(localStorage.getItem("manager"));
-        if (manager) {
-            document.getElementById("manager-name").innerText = `Welcome, ${manager.name}`;
-        } else {
-            window.location.href = "login.html";
-        }
-
-        fetchDrivers();
+        window.onload = function() {
+            fetchDrivers();
+            fetchTrips();
+        };
     </script>
-
 </body>
 </html>
